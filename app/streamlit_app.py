@@ -1,7 +1,7 @@
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/recommend"
+API_URL = st.secrets["API_URL"] if "API_URL" in st.secrets else "http://127.0.0.1:8000/recommend"
 
 st.set_page_config(
     page_title="FiReco AI Assistant",
