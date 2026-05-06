@@ -1,7 +1,6 @@
-import requests
 import streamlit as st
-
-API_URL = st.secrets["API_URL"] if "API_URL" in st.secrets else "http://127.0.0.1:8000/recommend"
+from recommender.ranker import recommend
+from recommender.explain import explain_recommendation
 
 st.set_page_config(
     page_title="FiReco AI Assistant",
@@ -10,84 +9,106 @@ st.set_page_config(
 )
 
 st.title("💳 FiReco AI Assistant")
+st.markdown(
+    "AI-powered financial product recommendation platform"
+)
 
 user_text = st.text_input(
     "Describe your ideal credit card"
 )
 
-if st.button("Get Recommendations"):
+preferred_category = st.selectbox(
+    "Preferred Category",
+    [
+        "all",
+        "travel",
+        "shopping",
+        "fuel",
+        "business",
+        "lifestyle",
+        "rewards",
+        "cashback",
+    ]
+)
 
-    payload = {
-        "goal": user_text,
-        "preferred_category": "all",
-        "max_annual_fee": None,
-        "top_k": 5,
-        "use_ai_summary": True,
-    }
+max_fee = st.number_input(
+    "Maximum Annual Fee (₹)",
+    min_value=0,
+    value=5000,
+    step=500
+)
+
+top_k = st.slider(
+    "Number of Recommendations",
+    min_value=1,
+    max_value=10,
+    value=5
+)
+
+if st.button("Get Recommendations"):
 
     try:
 
         with st.spinner("Finding recommendations..."):
 
-            response = requests.post(
-                API_URL,
-                json=payload,
-                timeout=60
+            results = recommend(
+                goal_text=user_text,
+                preferred_category=preferred_category,
+                max_annual_fee=max_fee,
+                top_k=top_k
             )
-
-            response.raise_for_status()
-
-            data = response.json()
-
-        if data.get("ai_summary"):
-            st.subheader("AI Summary")
-            st.info(data["ai_summary"])
 
         st.subheader("Top Recommendations")
 
-        recommendations = data.get(
-            "recommendations",
-            []
-        )
+        if results.empty:
+            st.warning("No recommendations found.")
+        else:
 
-        for rec in recommendations:
+            for idx, row in results.iterrows():
 
-            with st.container(border=True):
+                with st.container(border=True):
 
-                st.markdown(
-                    f"## #{rec['rank']} - {rec['product_name']}"
-                )
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.write(
-                        f"**Bank:** {rec['bank_name']}"
+                    st.markdown(
+                        f"## #{idx + 1} - {row.get('product_name', 'Unknown Product')}"
                     )
 
-                    st.write(
-                        f"**Category:** {rec['primary_usage_category']}"
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+
+                        st.write(
+                            f"**Bank:** {row.get('bank_name', 'N/A')}"
+                        )
+
+                        st.write(
+                            f"**Category:** {row.get('primary_usage_category', 'N/A')}"
+                        )
+
+                        st.write(
+                            f"**Reward Type:** {row.get('reward_type', 'N/A')}"
+                        )
+
+                        st.write(
+                            f"**Speciality:** {row.get('speciality', 'N/A')}"
+                        )
+
+                    with col2:
+
+                        st.metric(
+                            "Match Score",
+                            f"{row.get('score', 0):.3f}"
+                        )
+
+                        st.write(
+                            f"**Annual Fee:** ₹{float(row.get('annual_fee', 0)):.0f}"
+                        )
+
+                    explanation = explain_recommendation(
+                        row.to_dict(),
+                        user_text
                     )
 
-                    st.write(
-                        f"**Reward Type:** {rec['reward_type']}"
-                    )
-
-                    st.write(
-                        f"**Speciality:** {rec['speciality']}"
-                    )
-
-                with col2:
-                    st.metric(
-                        "Match Score",
-                        f"{rec['score']:.3f}"
-                    )
-
-                    st.write(
-                        f"**Annual Fee:** ₹{rec['annual_fee']:.0f}"
-                    )
-
-                st.success(rec["reason"])
+                    st.success(explanation)
 
     except Exception as e:
-        st.error(str(e))
+        st.error(f"Error: {str(e)}")
