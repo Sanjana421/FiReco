@@ -1,9 +1,11 @@
 from pathlib import Path
+import sqlite3
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_FILE = ROOT / "data" / "raw" / "products_raw.csv"
 OUT_FILE = ROOT / "data" / "processed" / "products_clean.csv"
+DB_FILE = ROOT / "database" / "finance.db"
 
 
 def safe_str(value) -> str:
@@ -38,6 +40,7 @@ def generate_tags(row: pd.Series) -> str:
         "premium": ["premium", "lounge", "gold", "platinum", "signature"],
         "discounts": ["discount", "coupon", "movie", "dining"],
         "points": ["points"],
+        "business": ["business"],
     }
 
     for tag, keywords in keyword_map.items():
@@ -66,11 +69,12 @@ def main():
     df.columns = df.columns.str.strip().str.lower()
     df = df.fillna("")
 
-    # Standardized columns for downstream use
+    # Standardize columns
     df["product_name"] = df["credit_card_name"].astype(str).str.strip()
     df["product_type"] = "credit_card"
     df["annual_fee"] = pd.to_numeric(df["annual_charges_in_inr"], errors="coerce").fillna(0).astype(float)
 
+    # Build text fields
     df["description"] = df.apply(build_description, axis=1)
     df["tags"] = df.apply(generate_tags, axis=1)
     df["combined_text"] = (
@@ -82,10 +86,18 @@ def main():
         df["bank_name"].astype(str)
     )
 
+    # Save processed CSV
     OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUT_FILE, index=False)
 
+    # Save to SQLite
+    DB_FILE.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(DB_FILE)
+    df.to_sql("financial_products", conn, if_exists="replace", index=False)
+    conn.close()
+
     print(f"Processed data saved to: {OUT_FILE}")
+    print(f"Saved data to SQLite database: {DB_FILE}")
     print(df.head(3).to_string())
 
 
