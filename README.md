@@ -1,18 +1,32 @@
-# 💳 FiReco AI Assistant
+# FiReco — AI-Powered Financial Product Recommendation Platform
 
-FiReco is an AI-powered financial product recommendation platform that delivers personalized credit card recommendations using semantic search, transformer embeddings, explainable AI, and LLM-generated recommendation summaries.
+FiReco is an AI-powered recommendation platform that delivers personalized credit card recommendations using semantic search, transformer embeddings, explainable AI, and LLM-generated recommendation summaries.
 
-The platform combines modern NLP-based retrieval techniques with scalable backend architecture to provide intelligent financial product matching based on user preferences and spending goals.
+The platform is designed to simulate a production-style financial recommendation workflow by combining modern NLP retrieval techniques with scalable backend architecture and interactive user interfaces.
 
 ---
 
-# 🚀 Features
+## Problem Statement
 
-- Semantic recommendation engine using transformer embeddings
-- Personalized financial product matching
+Traditional recommendation systems often rely on keyword matching and static filtering rules, limiting their ability to understand user intent expressed in natural language.
+
+FiReco addresses this challenge by implementing:
+- semantic similarity retrieval,
+- embedding-based recommendation ranking,
+- explainable recommendation reasoning,
+- and AI-generated recommendation summaries.
+
+The system enables users to describe financial goals naturally while receiving personalized and context-aware financial product recommendations.
+
+---
+
+# Features
+
+- Transformer-based semantic recommendation engine
+- Personalized credit card recommendations
 - Explainable AI recommendation reasoning
 - LLM-generated recommendation summaries
-- FastAPI REST backend
+- FastAPI backend API
 - Interactive Streamlit frontend
 - SQLite-based product storage
 - Modular preprocessing and ranking pipeline
@@ -20,42 +34,42 @@ The platform combines modern NLP-based retrieval techniques with scalable backen
 
 ---
 
-# 🏗️ System Architecture
+# System Architecture
 
 ```text
 User Query
     ↓
 Semantic Embedding Generation
     ↓
-Similarity-Based Retrieval
+Embedding Similarity Retrieval
     ↓
 Recommendation Ranking
     ↓
 Explainability Layer
     ↓
-LLM Summary Generation
+LLM Recommendation Summarization
     ↓
 Frontend Visualization
 ```
 
 ---
 
-# 🛠️ Tech Stack
+# Technology Stack
 
-| Category | Technologies |
+| Layer | Technologies |
 |---|---|
-| Backend | FastAPI, Python |
+| Backend API | FastAPI, Python |
 | Frontend | Streamlit |
 | NLP / AI | Sentence Transformers, OpenAI API |
-| ML / Ranking | Semantic Similarity, Embedding Search |
+| Recommendation Engine | Semantic Similarity Retrieval |
 | Data Processing | Pandas, NumPy |
 | Database | SQLite |
 | API Communication | Requests |
-| Deployment Ready | Uvicorn |
+| Deployment | Uvicorn |
 
 ---
 
-# 📂 Project Structure
+# Project Structure
 
 ```text
 FiReco/
@@ -89,41 +103,41 @@ FiReco/
 
 ---
 
-# ⚙️ Recommendation Pipeline
+# Recommendation Workflow
 
 ## 1. Data Preprocessing
-Financial product data is cleaned, normalized, and enriched with searchable metadata and descriptive tags.
+Financial product data is cleaned, normalized, tagged, and transformed into searchable semantic representations.
 
 ## 2. Semantic Embedding Generation
-Sentence Transformer embeddings are generated using:
+Product descriptions are converted into dense vector embeddings using:
 
 ```python
 all-MiniLM-L6-v2
 ```
 
-This enables semantic similarity search beyond keyword matching.
+This enables semantic search beyond keyword matching.
 
-## 3. Similarity-Based Ranking
-User queries are converted into embeddings and matched against product embeddings using cosine similarity.
+## 3. Similarity-Based Retrieval
+User queries are embedded and matched against financial product embeddings using cosine similarity.
 
-Additional ranking boosts are applied for:
-- preferred categories
-- annual fee constraints
-- user intent alignment
+Additional ranking boosts are applied based on:
+- financial usage category,
+- annual fee preferences,
+- and semantic relevance.
 
 ## 4. Explainability Layer
-The system generates transparent recommendation explanations based on:
-- reward alignment
-- spending category match
-- fee compatibility
-- semantic relevance
+The explainability module generates recommendation reasoning based on:
+- reward alignment,
+- category relevance,
+- fee compatibility,
+- and semantic matching.
 
-## 5. LLM-Powered Summarization
-OpenAI-generated summaries provide concise and personalized recommendation insights for users.
+## 5. LLM-Based Recommendation Summarization
+OpenAI-powered summaries generate concise and personalized recommendation insights for end users.
 
 ---
 
-# 🔌 API Endpoints
+# API Endpoints
 
 ## Health Check
 
@@ -131,7 +145,7 @@ OpenAI-generated summaries provide concise and personalized recommendation insig
 GET /health
 ```
 
-Response:
+### Response
 
 ```json
 {
@@ -141,13 +155,13 @@ Response:
 
 ---
 
-## Get Recommendations
+## Recommendation Endpoint
 
 ```http
 POST /recommend
 ```
 
-Request:
+### Request Example
 
 ```json
 {
@@ -159,7 +173,7 @@ Request:
 }
 ```
 
-Response:
+### Response Example
 
 ```json
 {
@@ -178,18 +192,18 @@ Response:
 
 ---
 
-# 💻 Installation
+# Installation
 
-## 1. Clone Repository
+## Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/<username>/FiReco.git
 cd FiReco
 ```
 
 ---
 
-## 2. Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -197,7 +211,7 @@ pip install -r requirements.txt
 
 ---
 
-## 3. Run Data Preprocessing
+## Run Data Preprocessing
 
 ```bash
 python pipeline/preprocess.py
@@ -205,13 +219,13 @@ python pipeline/preprocess.py
 
 ---
 
-## 4. Start FastAPI Backend
+## Start FastAPI Backend
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-Backend runs on:
+Backend URL:
 
 ```text
 http://127.0.0.1:8000
@@ -219,13 +233,13 @@ http://127.0.0.1:8000
 
 ---
 
-## 5. Start Streamlit Frontend
+## Launch Streamlit Frontend
 
 ```bash
 streamlit run app/streamlit_app.py
 ```
 
-Frontend runs on:
+Frontend URL:
 
 ```text
 http://127.0.0.1:8501
@@ -233,7 +247,7 @@ http://127.0.0.1:8501
 
 ---
 
-# 🧪 Example User Queries
+# Example Queries
 
 - Best cashback card for online shopping
 - Travel credit card with lounge access
@@ -243,36 +257,12 @@ http://127.0.0.1:8501
 
 ---
 
-# 📈 Key Engineering Highlights
-
-- Implemented transformer-based semantic retrieval for financial product recommendations
-- Built modular AI pipeline architecture with preprocessing, ranking, explainability, and summarization layers
-- Designed scalable REST API using FastAPI
-- Developed interactive recommendation frontend using Streamlit
-- Integrated LLM-generated recommendation explanations
-- Applied semantic similarity search for personalized recommendation workflows
-
----
-
-# 🔮 Future Improvements
+# Future Improvements
 
 - FAISS vector database integration
-- Hybrid recommendation models
-- User feedback learning loop
-- Real-time personalization
-- Cloud deployment
+- Hybrid recommendation architectures
 - Recommendation evaluation metrics
-- Authentication and user profiles
-- Analytics dashboard
-
----
-
-# 📌 Resume Summary
-
-FiReco demonstrates applied AI engineering skills across:
-- NLP and semantic retrieval
-- backend API development
-- recommendation systems
-- explainable AI
-- LLM integration
-- full-stack AI application architecture
+- Real-time personalization
+- User feedback learning loop
+- Cloud deployment
+- Authentication and analytics dashboard
